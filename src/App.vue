@@ -1,10 +1,18 @@
 <template>
     <div id="app">
-        <Header />
+        <Header 
+            :numCorrect="numCorrect"
+            :numTotal="numTotal"
+        />
         <b-container class="bv-example-row">
             <b-row>
                 <b-col sm="6" offset="3">
-                    <QuestionBox />
+                    <QuestionBox 
+                        v-if="questions.length"
+                        :currentQuestion="questions[index]"
+                        :next="next"
+                        :increment="increment"
+                    />
                 </b-col>
             </b-row>
         </b-container>
@@ -24,13 +32,27 @@
         },
         data() {
             return {
-                questions: []
+                questions: [],
+                index: 0,
+                numCorrect: 0,
+                numTotal: 0
+            }
+        },
+        methods: {
+            next() {
+                this.index++
+            },
+            increment(isCorrect) {
+                if (isCorrect) {
+                    this.numCorrect++
+                }
+                this.numTotal++
             }
         },
         async mounted() {
             const response = await axios.get('https://opentdb.com/api.php?amount=10')
-            const quizData = response.data.results;
-            console.log(quizData)
+            this.questions = response.data.results;
+            console.log(this.questions)
         }
     }
 </script>
